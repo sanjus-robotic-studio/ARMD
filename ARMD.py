@@ -1,4 +1,5 @@
 # import the necessary packages
+from gpiozero import LED
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import load_model
@@ -8,13 +9,11 @@ import imutils
 import time
 import cv2
 import os
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BOARD)
-servo = 22
-GPIO.setup(servo,GPIO.OUT)
+red = LED(17)
+green = LED(27)
+red.on()
+green.off()
 
-p=GPIO.PWM(servo,50)
-p.start(7)
 
 def say(text_tts):
     os.system('pico2wave -l en-US -w  say.wav "%s" ' % text_tts)
@@ -122,8 +121,13 @@ while True:
         if label == "Mask":
             say("You have completed the protocol to continue, you can enter to the venue")
             time.sleep(0.5)
-            say("Remember, it is everyone'sresponsability to mantain social distance.")
-            pwm.ChangeDutyCycle(12)
+            say("Remember, it is everyone's responsability to mantain social distance.")
+            red.off()
+            green.on()
+            time.sleep(2)
+            green.off()
+            red.on()
+            
         else:
           say("No face mask detected, You cannot enter to the venue")
           say("Please put on a mask to enter")
